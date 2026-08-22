@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
 import { toast } from 'sonner';
 import AppLayout from '@/components/AppLayout';
@@ -10,31 +10,35 @@ interface ScannedGarment {
   id: string;
   title: string;
   category: string;
+  categoryType: 'Kemeja' | 'Outerwear' | 'Celana' | 'Dress' | 'Kaos';
   scanDate: string;
   score: number;
   statusBadge: 'Baik' | 'Perlu Perawatan' | 'Perlu Jasa';
   summary: string;
   fabric: string;
+  iconText: string;
   parameters: {
     cleanliness: string;
     fading: string;
     fiber: string;
     damage: string;
   };
-  careSteps: string[];
+  careSteps: { text: string; done: boolean }[];
   recommendationAction: string;
 }
 
-const scannedGarments: ScannedGarment[] = [
+const initialScannedGarments: ScannedGarment[] = [
   {
     id: 'sg-1',
     title: 'Kemeja Flannel Sage Green',
     category: 'Kemeja',
+    categoryType: 'Kemeja',
     scanDate: '22 Agu 2026',
     score: 86,
     statusBadge: 'Baik',
     summary: 'Kondisi serat kain sangat terjaga. Bebas noda membandel.',
     fabric: '100% Katun Organik',
+    iconText: '👔',
     parameters: {
       cleanliness: '95/100 (Sangat Bersih)',
       fading: '90/100 (Warna Cerah)',
@@ -42,10 +46,10 @@ const scannedGarments: ScannedGarment[] = [
       damage: 'Tidak ada robekan',
     },
     careSteps: [
-      'Gunakan air dingin (suhu maksimal 30°C) saat mencuci.',
-      'Balik pakaian ke dalam sebelum dicuci agar warna kain tidak tergesek.',
-      'Gunakan deterjen lembaran ramah lingkungan (Kindfoam / eco-detergent).',
-      'Jemur di tempat teduh dengan sirkulasi udara baik, hindari terik matahari langsung.',
+      { text: 'Gunakan air dingin (suhu maksimal 30°C) saat mencuci.', done: true },
+      { text: 'Balik pakaian ke dalam sebelum dicuci agar warna kain tidak tergesek.', done: true },
+      { text: 'Gunakan deterjen lembaran ramah lingkungan (Kindfoam / eco-detergent).', done: false },
+      { text: 'Jemur di tempat teduh dengan sirkulasi udara baik, hindari terik matahari langsung.', done: false },
     ],
     recommendationAction: 'Perawatan mandiri di rumah sudah optimal. Tidak memerlukan jasa permak.',
   },
@@ -53,11 +57,13 @@ const scannedGarments: ScannedGarment[] = [
     id: 'sg-2',
     title: 'Jaket Denim Vintage Levi\'s 501',
     category: 'Outerwear',
+    categoryType: 'Outerwear',
     scanDate: '18 Agu 2026',
     score: 67,
     statusBadge: 'Perlu Perawatan',
     summary: 'Warna agak pudar di area siku & aroma serat kain lembab.',
     fabric: 'Heavyweight Denim Twill 14oz',
+    iconText: '🧥',
     parameters: {
       cleanliness: '75/100 (Perlu Deep Clean)',
       fading: '65/100 (Pudar Sedang)',
@@ -65,10 +71,10 @@ const scannedGarments: ScannedGarment[] = [
       damage: 'Jahitan saku samping longgar',
     },
     careSteps: [
-      'Lakukan Deep Clean & Spa Anti-Odor untuk menghilangkan jamur mikroba.',
-      'Rendam dengan larutan cuka putih 1 sendok makan untuk mengunci pigmen indigo.',
-      'Jangan diperas terlalu keras menggunakan mesin pengering putar tinggi.',
-      'Gantung menggunakan hanger kayu berbahu lebar.',
+      { text: 'Lakukan Deep Clean & Spa Anti-Odor untuk menghilangkan jamur mikroba.', done: false },
+      { text: 'Rendam dengan larutan cuka putih 1 sendok makan untuk mengunci pigmen indigo.', done: false },
+      { text: 'Jangan diperas terlalu keras menggunakan mesin pengering putar tinggi.', done: false },
+      { text: 'Gantung menggunakan hanger kayu berbahu lebar.', done: false },
     ],
     recommendationAction: 'Disarankan melakukan Deep Clean & Anti-Odor Spa agar serat kembali segar.',
   },
@@ -76,11 +82,13 @@ const scannedGarments: ScannedGarment[] = [
     id: 'sg-3',
     title: 'Celana Chino Slim Fit',
     category: 'Celana',
+    categoryType: 'Celana',
     scanDate: '10 Agu 2026',
     score: 52,
     statusBadge: 'Perlu Jasa',
     summary: 'Jahitan kelim bawah terlepas sepanjang 8 cm & kancing longgar.',
     fabric: 'Twill Cotton Stretch 98% / Elastane 2%',
+    iconText: '👖',
     parameters: {
       cleanliness: '80/100 (Bersih)',
       fading: '70/100 (Pudar Ringan)',
@@ -88,11 +96,35 @@ const scannedGarments: ScannedGarment[] = [
       damage: 'Kelim bawah robek 8 cm',
     },
     careSteps: [
-      'Perbaiki jahitan kelim bawah menggunakan teknik chainstitch atau hemming rapi.',
-      'Kencangkan kembali kancing pinggang sebelum dicuci.',
-      'Hindari penggunaan pemutih klorin.',
+      { text: 'Perbaiki jahitan kelim bawah menggunakan teknik chainstitch atau hemming rapi.', done: false },
+      { text: 'Kencangkan kembali kancing pinggang sebelum dicuci.', done: false },
+      { text: 'Hindari penggunaan pemutih klorin.', done: false },
     ],
     recommendationAction: 'Perlu bantuan tukang jahit / Taylor artisan terdekat untuk perbaikan jahitan kelim.',
+  },
+  {
+    id: 'sg-4',
+    title: 'Dress Tenun Ikat Tradisional',
+    category: 'Dress',
+    categoryType: 'Dress',
+    scanDate: '05 Agu 2026',
+    score: 92,
+    statusBadge: 'Baik',
+    summary: 'Serat tenun tangan istimewa. Tidak ada benang lepas.',
+    fabric: 'Tenun Pewarna Alami',
+    iconText: '👗',
+    parameters: {
+      cleanliness: '98/100 (Bersih Terawat)',
+      fading: '95/100 (Pewarna Alami Terkunci)',
+      fiber: '92/100 (Anyaman Padat)',
+      damage: 'Sempurna',
+    },
+    careSteps: [
+      { text: 'Gunakan lerak atau sabun khusus kain tradisional saat mencuci.', done: true },
+      { text: 'Cuci manual secara perlahan dengan tangan tanpa disikat.', done: true },
+      { text: 'Angin-anginkan di dalam ruangan hingga kering.', done: true },
+    ],
+    recommendationAction: 'Kondisi pakaian sangat prima. Terus terapkan teknik cuci tradisional.',
   },
 ];
 
@@ -101,6 +133,7 @@ const careGuides = [
     id: 'cg-1',
     icon: '💧',
     title: 'Metode Cuci Ramah Lingkungan',
+    category: 'Pencucian',
     desc: 'Tips mencuci pakaian tanpa merusak serat kain dan hemat konsumsi air.',
     steps: [
       'Pilah pakaian berdasarkan warna (terang, gelap, putih) dan tingkat kotoran.',
@@ -112,6 +145,7 @@ const careGuides = [
     id: 'cg-2',
     icon: '☀️',
     title: 'Pengeringan & Penjemuran Alami',
+    category: 'Pengeringan',
     desc: 'Mencegah pemudaran warna kain akibat sinar UV berlebih.',
     steps: [
       'Selalu jemur pakaian dalam kondisi terbalik (sisi dalam menghadap ke luar).',
@@ -123,6 +157,7 @@ const careGuides = [
     id: 'cg-3',
     icon: '🛡️',
     title: 'Penyimpanan Anti-Jamur & Ngengat',
+    category: 'Penyimpanan',
     desc: 'Menjaga pakaian tetap harum dan bebas apek di dalam lemari.',
     steps: [
       'Pastikan pakaian sudah 100% kering sebelum dilipat atau dimasukkan lemari.',
@@ -134,6 +169,7 @@ const careGuides = [
     id: 'cg-4',
     icon: '🎨',
     title: 'Pemulihan Warna Pudar (Re-Colour)',
+    category: 'Restorasi',
     desc: 'Cara mengembalikan ketajaman warna pakaian katun dan denim lama.',
     steps: [
       'Rendam pakaian dalam air dingin bercampur 1 cangkir garam dapur untuk mengunci warna baru.',
@@ -144,17 +180,54 @@ const careGuides = [
 ];
 
 const fabricKnowledge = [
-  { name: 'Katun (Cotton)', temp: '30°C - 40°C', icon: '🌿', care: 'Cuci biasa, setrika suhu sedang, tahan lama.' },
-  { name: 'Denim', temp: 'Air Dingin', icon: '👖', care: 'Jarang dicuci, cuci terbalik, jemur di tempat teduh.' },
-  { name: 'Sutra & Rayon', temp: 'Handwash Dingin', icon: '✨', care: 'Cuci manual lembut, jangan diperas, setrika uap.' },
-  { name: 'Wool & Rajut', temp: 'Air Dingin Khusus', icon: '🧶', care: 'Deterjen pH netral, jemur mendatar, jangan digantung.' },
-  { name: 'Linen', temp: '30°C', icon: '🌾', care: 'Cepat kusut alami, setrika saat masih sedikit lembab.' },
+  { name: 'Katun (Cotton)', temp: '30°C - 40°C', icon: '🌿', care: 'Cuci biasa, setrika suhu sedang, tahan lama & bernapas.' },
+  { name: 'Denim Indigo', temp: 'Air Dingin', icon: '👖', care: 'Jarang dicuci, cuci terbalik, jemur di tempat teduh agar indigo awet.' },
+  { name: 'Sutra & Rayon', temp: 'Handwash Dingin', icon: '✨', care: 'Cuci manual lembut, jangan diperas kencang, setrika uap suhu rendah.' },
+  { name: 'Wool & Rajut', temp: 'Air Dingin Khusus', icon: '🧶', care: 'Deterjen pH netral, jemur mendatar (flat dry), jangan digantung di hanger.' },
+  { name: 'Linen Alami', temp: '30°C', icon: '🌾', care: 'Cepat kusut alami yang estetik, setrika saat kain masih sedikit lembab.' },
 ];
 
 export default function RawatPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'care_plan' | 'panduan' | 'kain'>('care_plan');
+  const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string>('Semua');
+  const [garments, setGarments] = useState<ScannedGarment[]>(initialScannedGarments);
   const [selectedGarment, setSelectedGarment] = useState<ScannedGarment | null>(null);
+
+  const garmentCategories = ['Semua', 'Kemeja', 'Outerwear', 'Celana', 'Dress'];
+
+  const filteredGarments = useMemo(() => {
+    if (selectedCategoryFilter === 'Semua') return garments;
+    return garments.filter((g) => g.categoryType === selectedCategoryFilter);
+  }, [garments, selectedCategoryFilter]);
+
+  const toggleStepDone = (garmentId: string, stepIndex: number) => {
+    setGarments((prev) =>
+      prev.map((g) => {
+        if (g.id === garmentId) {
+          const updatedSteps = [...g.careSteps];
+          updatedSteps[stepIndex] = {
+            ...updatedSteps[stepIndex],
+            done: !updatedSteps[stepIndex].done,
+          };
+          return { ...g, careSteps: updatedSteps };
+        }
+        return g;
+      })
+    );
+
+    if (selectedGarment && selectedGarment.id === garmentId) {
+      setSelectedGarment((prev) => {
+        if (!prev) return null;
+        const updatedSteps = [...prev.careSteps];
+        updatedSteps[stepIndex] = {
+          ...updatedSteps[stepIndex],
+          done: !updatedSteps[stepIndex].done,
+        };
+        return { ...prev, careSteps: updatedSteps };
+      });
+    }
+  };
 
   return (
     <AppLayout title="Rawat Pakaian" showBack backHref="/">
@@ -196,7 +269,7 @@ export default function RawatPage() {
             }`}
           >
             <Icon name="HeartIcon" size={16} />
-            <span>Care Plan Baju ({scannedGarments.length})</span>
+            <span>Care Plan Baju ({garments.length})</span>
           </button>
 
           <button
@@ -227,7 +300,25 @@ export default function RawatPage() {
         {/* TAB 1: CARE PLAN & RIWAYAT SCAN */}
         {activeTab === 'care_plan' && (
           <div className="space-y-3">
-            {scannedGarments.map((garment) => (
+            {/* Category Sub-filter */}
+            <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
+              {garmentCategories.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategoryFilter(cat)}
+                  className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
+                    selectedCategoryFilter === cat
+                      ? 'bg-[#10284D] text-white shadow-xs'
+                      : 'bg-card border border-border text-muted-foreground hover:border-[#10284D]'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* List Cards */}
+            {filteredGarments.map((garment) => (
               <div
                 key={garment.id}
                 onClick={() => setSelectedGarment(garment)}
@@ -235,8 +326,8 @@ export default function RawatPage() {
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-primary font-bold flex-shrink-0">
-                      <Icon name="ShirtIcon" size={24} />
+                    <div className="w-12 h-12 rounded-xl bg-secondary flex items-center justify-center text-xl flex-shrink-0">
+                      <span>{garment.iconText}</span>
                     </div>
                     <div>
                       <h3 className="text-xs font-extrabold text-foreground">{garment.title}</h3>
@@ -263,9 +354,17 @@ export default function RawatPage() {
                   {garment.summary}
                 </p>
 
-                <div className="flex items-center justify-between text-[11px] font-bold text-primary pt-2 border-t border-border">
-                  <span>Lihat Detail Care Plan & Panduan</span>
-                  <Icon name="ChevronRightIcon" size={14} />
+                {/* Progress checklist preview */}
+                <div className="flex items-center justify-between text-[11px] font-semibold text-muted-foreground pt-2 border-t border-border">
+                  <div className="flex items-center gap-1.5 text-emerald-600 font-bold">
+                    <span>✓</span>
+                    <span>
+                      {garment.careSteps.filter((s) => s.done).length} dari {garment.careSteps.length} langkah selesai
+                    </span>
+                  </div>
+                  <span className="text-primary font-bold hover:underline flex items-center gap-1">
+                    Buka Detail <Icon name="ChevronRightIcon" size={12} />
+                  </span>
                 </div>
               </div>
             ))}
@@ -280,19 +379,24 @@ export default function RawatPage() {
                 key={guide.id}
                 className="bg-card rounded-2xl p-4 border border-border shadow-sm space-y-2.5"
               >
-                <div className="flex items-center gap-2.5">
-                  <span className="text-xl">{guide.icon}</span>
-                  <div>
-                    <h3 className="text-xs font-extrabold text-foreground">{guide.title}</h3>
-                    <p className="text-[10px] text-muted-foreground">{guide.desc}</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2.5">
+                    <span className="text-xl">{guide.icon}</span>
+                    <div>
+                      <h3 className="text-xs font-extrabold text-foreground">{guide.title}</h3>
+                      <p className="text-[10px] text-muted-foreground">{guide.desc}</p>
+                    </div>
                   </div>
+                  <span className="text-[10px] bg-secondary text-primary font-extrabold px-2 py-0.5 rounded-full">
+                    {guide.category}
+                  </span>
                 </div>
 
-                <div className="bg-muted/50 rounded-xl p-3 space-y-1.5 border border-border">
+                <div className="bg-muted/50 rounded-xl p-3 space-y-2 border border-border">
                   {guide.steps.map((step, idx) => (
                     <div key={idx} className="flex items-start gap-2 text-xs text-foreground/90">
                       <span className="text-[#10284D] font-bold">{idx + 1}.</span>
-                      <span className="leading-tight">{step}</span>
+                      <span className="leading-relaxed">{step}</span>
                     </div>
                   ))}
                 </div>
@@ -316,7 +420,7 @@ export default function RawatPage() {
                       Suhu: {fabric.temp}
                     </span>
                   </div>
-                  <p className="text-xs text-muted-foreground pl-7">{fabric.care}</p>
+                  <p className="text-xs text-muted-foreground pl-7 leading-relaxed">{fabric.care}</p>
                 </div>
               ))}
             </div>
@@ -328,9 +432,14 @@ export default function RawatPage() {
           <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
             <div className="bg-white rounded-3xl p-6 w-full max-w-md text-gray-800 space-y-4 max-h-[85vh] overflow-y-auto animate-scale-in">
               <div className="flex items-center justify-between border-b border-gray-100 pb-3">
-                <div>
-                  <h3 className="font-extrabold text-base text-gray-900">{selectedGarment.title}</h3>
-                  <p className="text-xs text-gray-500">Diagnosis AI • {selectedGarment.scanDate}</p>
+                <div className="flex items-center gap-2.5">
+                  <span className="text-2xl">{selectedGarment.iconText}</span>
+                  <div>
+                    <h3 className="font-extrabold text-base text-gray-900 leading-tight">
+                      {selectedGarment.title}
+                    </h3>
+                    <p className="text-xs text-gray-500">Diagnosis AI • {selectedGarment.scanDate}</p>
+                  </div>
                 </div>
                 <button
                   onClick={() => setSelectedGarment(null)}
@@ -379,14 +488,27 @@ export default function RawatPage() {
                 </div>
               </div>
 
-              {/* Rekomendasi Langkah Rawat */}
+              {/* Interactive Care Steps Checklist */}
               <div className="space-y-1.5">
-                <span className="text-xs font-bold text-gray-800 block">Langkah Perawatan Mandiri:</span>
-                <div className="bg-emerald-50 text-emerald-950 p-3.5 rounded-2xl border border-emerald-200 space-y-1 text-xs">
+                <span className="text-xs font-bold text-gray-800 block">Checklist Langkah Perawatan:</span>
+                <div className="space-y-1.5">
                   {selectedGarment.careSteps.map((step, i) => (
-                    <div key={i} className="flex items-start gap-1.5">
-                      <span className="font-bold">•</span>
-                      <span>{step}</span>
+                    <div
+                      key={i}
+                      onClick={() => toggleStepDone(selectedGarment.id, i)}
+                      className={`p-2.5 rounded-xl border flex items-start gap-2.5 cursor-pointer transition-all ${
+                        step.done
+                          ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950 line-through opacity-80'
+                          : 'bg-gray-50 border-gray-200 text-gray-800 hover:bg-gray-100'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={step.done}
+                        onChange={() => {}}
+                        className="w-4 h-4 mt-0.5 accent-emerald-600 rounded cursor-pointer"
+                      />
+                      <span className="text-xs leading-relaxed">{step.text}</span>
                     </div>
                   ))}
                 </div>
@@ -394,7 +516,7 @@ export default function RawatPage() {
 
               {/* Rekomendasi Aksi */}
               <div className="bg-blue-50 p-3 rounded-2xl border border-blue-100 text-xs text-blue-900">
-                <span className="font-bold block mb-0.5">Kesimpulan AI:</span>
+                <span className="font-bold block mb-0.5">Kesimpulan & Solusi AI:</span>
                 <p>{selectedGarment.recommendationAction}</p>
               </div>
 
