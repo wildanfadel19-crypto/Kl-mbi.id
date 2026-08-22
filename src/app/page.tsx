@@ -6,9 +6,9 @@ import AppLayout from '@/components/AppLayout';
 import Icon from '@/components/ui/AppIcon';
 
 const promoSlides = [
-  { title: 'Eco-Fashion Sale 🌿', subtitle: 'Diskon 30% produk upcycle pilihan', cta: 'Belanja Sekarang' },
-  { title: 'Scan & Rawat Bajumu 👕', subtitle: 'Analisis AI gratis untuk 5 baju pertamamu', cta: 'Mulai Scan' },
-  { title: 'Trift Drop Minggu Ini ♻️', subtitle: 'Koleksi vintage premium baru tersedia', cta: 'Lihat Koleksi' },
+  { title: 'Eco-Fashion Sale 🌿', subtitle: 'Diskon 30% produk upcycle pilihan', cta: 'Belanja Sekarang', link: '/trift-marketplace' },
+  { title: 'Scan & Rawat Bajumu 👕', subtitle: 'Analisis AI gratis untuk 5 baju pertamamu', cta: 'Mulai Scan', link: '/wearwise-ai' },
+  { title: 'Trift Drop Minggu Ini ♻️', subtitle: 'Koleksi vintage premium baru tersedia', cta: 'Lihat Koleksi', link: '/trift-marketplace' },
 ];
 
 const categories = ['Semua', 'Kemeja', 'Celana', 'Dress', 'Jaket', 'Kaos', 'Aksesoris'];
@@ -60,7 +60,9 @@ export default function BerandaPage() {
     <AppLayout
       headerRight={
         <div className="flex items-center gap-2">
+          {/* Icon Keranjang -> /keranjang */}
           <button
+            onClick={() => router.push('/keranjang')}
             className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
             aria-label="Keranjang"
           >
@@ -69,7 +71,9 @@ export default function BerandaPage() {
               3
             </span>
           </button>
+          {/* Icon Chat -> /chat */}
           <button
+            onClick={() => router.push('/chat')}
             className="flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
             aria-label="Chat"
           >
@@ -80,7 +84,10 @@ export default function BerandaPage() {
     >
       <div className="max-w-2xl mx-auto space-y-5">
         {/* a. Greeting Card */}
-        <div className="bg-card rounded-2xl shadow-sm border border-border p-4 flex items-center gap-4">
+        <div
+          onClick={() => router.push('/profil')}
+          className="bg-card rounded-2xl shadow-sm border border-border p-4 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all"
+        >
           <div className="w-12 h-12 rounded-full gradient-navy flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
             RA
           </div>
@@ -108,7 +115,10 @@ export default function BerandaPage() {
                 >
                   <h3 className="text-white text-xl font-extrabold">{slide.title}</h3>
                   <p className="text-white/80 text-sm mt-1">{slide.subtitle}</p>
-                  <button className="mt-3 bg-white text-[#1A2B5C] rounded-xl px-5 py-2 text-xs font-bold hover:bg-white/90 transition-colors self-start shadow-sm">
+                  <button
+                    onClick={() => router.push(slide.link)}
+                    className="mt-3 bg-white text-[#1A2B5C] rounded-xl px-5 py-2 text-xs font-bold hover:bg-white/90 transition-colors self-start shadow-sm"
+                  >
                     {slide.cta}
                   </button>
                 </div>
@@ -132,11 +142,17 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        {/* c. Impact Stats Card */}
-        <div className="bg-card rounded-2xl shadow-sm border border-border p-4">
-          <div className="flex items-center gap-2 mb-3">
-            <Icon name="GlobeAmericasIcon" size={16} className="text-primary" />
-            <span className="text-sm font-bold text-foreground">Dampak Sirkularmu</span>
+        {/* c. Impact Stats Card -> /dampak */}
+        <div
+          onClick={() => router.push('/dampak')}
+          className="bg-card rounded-2xl shadow-sm border border-border p-4 cursor-pointer hover:shadow-md transition-all"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <div className="flex items-center gap-2">
+              <Icon name="GlobeAmericasIcon" size={16} className="text-primary" />
+              <span className="text-sm font-bold text-foreground">Dampak Sirkularmu</span>
+            </div>
+            <span className="text-[11px] font-bold text-primary hover:underline">Lihat Detail →</span>
           </div>
           <div className="grid grid-cols-4 gap-0">
             {/* Progress Circle */}
@@ -180,9 +196,12 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        {/* d. Feature Cards (3 columns) */}
+        {/* d. Feature Cards (3 columns) -> Styliss AI, Care Plan, Wearwise AI */}
         <div className="grid grid-cols-3 gap-3">
-          <div className="bg-[#D1FAE5]/50 border border-[#D1FAE5] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md transition-all">
+          <div
+            onClick={() => router.push('/styliss-ai')}
+            className="bg-[#D1FAE5]/50 border border-[#D1FAE5] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md active:scale-95 transition-all"
+          >
             <div className="w-10 h-10 rounded-xl bg-[#D1FAE5] mx-auto mb-2 flex items-center justify-center">
               <Icon name="UserIcon" size={20} className="text-[#166534]" />
             </div>
@@ -190,7 +209,10 @@ export default function BerandaPage() {
             <p className="text-[10px] text-muted-foreground mt-0.5">See Your Style in 3D</p>
           </div>
 
-          <div className="bg-[#FCE4EC]/50 border border-[#FCE4EC] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md transition-all">
+          <div
+            onClick={() => router.push('/care-plan')}
+            className="bg-[#FCE4EC]/50 border border-[#FCE4EC] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md active:scale-95 transition-all"
+          >
             <div className="w-10 h-10 rounded-xl bg-[#FCE4EC] mx-auto mb-2 flex items-center justify-center">
               <Icon name="HeartIcon" size={20} className="text-[#C62828]" />
             </div>
@@ -198,7 +220,10 @@ export default function BerandaPage() {
             <p className="text-[10px] text-muted-foreground mt-0.5">Your Guide to Better Care</p>
           </div>
 
-          <div className="bg-[#FFF3E0]/50 border border-[#FFF3E0] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md transition-all">
+          <div
+            onClick={() => router.push('/wearwise-ai')}
+            className="bg-[#FFF3E0]/50 border border-[#FFF3E0] rounded-2xl p-3.5 text-center cursor-pointer hover:shadow-md active:scale-95 transition-all"
+          >
             <div className="w-10 h-10 rounded-xl bg-[#FFF3E0] mx-auto mb-2 flex items-center justify-center">
               <Icon name="QrCodeIcon" size={20} className="text-[#E65100]" />
             </div>
@@ -228,7 +253,10 @@ export default function BerandaPage() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-base font-extrabold text-foreground">Featured Drops</h3>
-            <button className="text-[#E86D50] text-xs font-bold hover:underline">
+            <button
+              onClick={() => router.push('/trift-marketplace')}
+              className="text-[#E86D50] text-xs font-bold hover:underline"
+            >
               Lihat lainnya →
             </button>
           </div>
@@ -239,6 +267,7 @@ export default function BerandaPage() {
               .map((product, i) => (
                 <div
                   key={i}
+                  onClick={() => router.push('/trift-marketplace')}
                   className="w-[155px] flex-shrink-0 bg-card rounded-2xl border border-border shadow-sm overflow-hidden hover:shadow-md transition-all cursor-pointer"
                 >
                   {/* Image Placeholder */}
