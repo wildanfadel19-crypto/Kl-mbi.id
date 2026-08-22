@@ -33,7 +33,7 @@ export default function TopHeader({
           ) : null}
           {!showBack && (
             <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-              <AppLogo src="/assets/images/app_logo.png" width={130} height={34} />
+              <AppLogo variant="full" size="md" />
             </Link>
           )}
           {title && (
