@@ -49,20 +49,17 @@ export default function TopHeader({
             <>
               <button
                 className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
-                aria-label="Notifikasi"
+                aria-label="Chat"
               >
-                <Icon name="BellIcon" size={20} className="text-foreground" />
-                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-warning border-2 border-card" />
+                <Icon name="ChatBubbleLeftRightIcon" size={20} className="text-foreground" />
               </button>
-              <Link
-                href="/profil"
-                className="flex items-center justify-center w-9 h-9 rounded-full overflow-hidden border-2 border-accent hover:opacity-90 transition-opacity"
-                aria-label="Profil pengguna"
+              <button
+                className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
+                aria-label="Keranjang"
               >
-                <div className="w-full h-full gradient-green flex items-center justify-center">
-                  <span className="text-xs font-bold text-white">RA</span>
-                </div>
-              </Link>
+                <Icon name="ShoppingCartIcon" size={20} className="text-foreground" />
+                <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-danger border-2 border-card" />
+              </button>
             </>
           )}
         </div>
