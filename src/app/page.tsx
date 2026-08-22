@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import AppLayout from '@/components/AppLayout';
 import Icon from '@/components/ui/AppIcon';
 
@@ -31,8 +32,20 @@ function getGreeting(): string {
 }
 
 export default function BerandaPage() {
+  const router = useRouter();
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
+
+  useEffect(() => {
+    // Simulasi alur entry: jika belum login / belum melintasi splash, arahkan ke splash screen
+    const isAuth = localStorage.getItem('klambi_auth');
+    const hasSplashed = sessionStorage.getItem('klambi_splashed');
+
+    if (!isAuth && !hasSplashed) {
+      sessionStorage.setItem('klambi_splashed', 'true');
+      router.push('/splash');
+    }
+  }, [router]);
 
   useEffect(() => {
     const timer = setInterval(() => {

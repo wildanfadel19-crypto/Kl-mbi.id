@@ -1,55 +1,28 @@
 'use client';
 
-import React, { memo, useMemo } from 'react';
-import AppIcon from './AppIcon';
-import AppImage from './AppImage';
+import React, { memo } from 'react';
+import KlambiLogo from './KlambiLogo';
 
 interface AppLogoProps {
-  src?: string; // Image source (optional)
-  iconName?: string; // Icon name when no image
-  size?: number; // Size for icon/image
-  width?: number; // Explicit width
-  height?: number; // Explicit height
-  className?: string; // Additional classes
-  onClick?: () => void; // Click handler
+  variant?: 'full' | 'icon-only' | 'stacked';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
+  className?: string;
+  onClick?: () => void;
+  [key: string]: any;
 }
 
 const AppLogo = memo(function AppLogo({
-  src = '/assets/images/app_logo.png',
-  iconName = 'SparklesIcon',
-  size,
-  width,
-  height,
+  variant = 'full',
+  size = 'md',
   className = '',
   onClick,
 }: AppLogoProps) {
-  // Memoize className calculation
-  const containerClassName = useMemo(() => {
-    const classes = ['flex items-center'];
-    if (onClick) classes.push('cursor-pointer hover:opacity-80 transition-opacity');
-    if (className) classes.push(className);
-    return classes.join(' ');
-  }, [onClick, className]);
-
-  const imgWidth = width ?? (size ?? 130);
-  const imgHeight = height ?? (size ?? 34);
-
   return (
-    <div className={containerClassName} onClick={onClick}>
-      {/* Show image if src provided, otherwise show icon */}
-      {src ? (
-        <AppImage
-          src={src}
-          alt="Klámbi.id Logo" 
-          width={imgWidth}
-          height={imgHeight}
-          className="flex-shrink-0 object-contain"
-          priority={true}
-          unoptimized={src.endsWith('.svg')}
-        />
-      ) : (
-        <AppIcon name={iconName} size={size ?? 32} className="flex-shrink-0" />
-      )}
+    <div
+      className={`inline-flex items-center ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''} ${className}`}
+      onClick={onClick}
+    >
+      <KlambiLogo variant={variant} size={size} />
     </div>
   );
 });
