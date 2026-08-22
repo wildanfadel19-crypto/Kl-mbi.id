@@ -14,12 +14,10 @@ const promoSlides = [
 const categories = ['Semua', 'Kemeja', 'Celana', 'Dress', 'Jaket', 'Kaos', 'Aksesoris'];
 
 const featuredProducts = [
-  { cat: 'Kemeja', name: 'Flannel Sage Green', priceNow: 89000, priceOrig: 165000, condition: 'Sangat Baik' },
-  { cat: 'Celana', name: 'Selvedge Denim 14oz', priceNow: 145000, priceOrig: 320000, condition: 'Baik' },
-  { cat: 'Jaket', name: 'Windbreaker Vintage 90s', priceNow: 175000, priceOrig: 350000, condition: 'Sangat Baik' },
-  { cat: 'Dress', name: 'Tenun Ikat Tradisional', priceNow: 210000, priceOrig: 450000, condition: 'Baik' },
-  { cat: 'Kaos', name: 'Graphic Tee Oversized', priceNow: 55000, priceOrig: 120000, condition: 'Cukup' },
-  { cat: 'Kemeja', name: 'Oxford Button Down', priceNow: 95000, priceOrig: 200000, condition: 'Sangat Baik' },
+  { cat: 'Kemeja', name: 'Patchwork Denim Jacket', priceNow: 185000, priceOrig: 250000, condition: 'Sangat Baik' },
+  { cat: 'Atasan', name: 'Graphic Long Sleeve Tee', priceNow: 120000, priceOrig: 200000, condition: 'Baik' },
+  { cat: 'Bawahan', name: 'Graphic Mini Skirt', priceNow: 95000, priceOrig: 150000, condition: 'Baik' },
+  { cat: 'Outer', name: 'Windbreaker Vintage 90s', priceNow: 175000, priceOrig: 350000, condition: 'Sangat Baik' },
 ];
 
 function getGreeting(): string {
@@ -36,6 +34,12 @@ export default function BerandaPage() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [selectedCategory, setSelectedCategory] = useState('Semua');
 
+  // Count-up animation state for Impact Tracker
+  const [countProgress, setCountProgress] = useState(0);
+  const [countKg, setCountKg] = useState(0);
+  const [countRank, setCountRank] = useState(1);
+  const [countScan, setCountScan] = useState(0);
+
   useEffect(() => {
     // Simulasi alur entry: jika belum login / belum melintasi splash, arahkan ke splash screen
     const isAuth = localStorage.getItem('klambi_auth');
@@ -48,10 +52,35 @@ export default function BerandaPage() {
   }, [router]);
 
   useEffect(() => {
+    // Promo banner carousel timer
     const timer = setInterval(() => {
       setActiveSlide((prev) => (prev + 1) % promoSlides.length);
     }, 5000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    // Count-up animation for impact metrics on page load
+    const duration = 1200; // ms
+    const steps = 30;
+    const intervalTime = duration / steps;
+    let currentStep = 0;
+
+    const countInterval = setInterval(() => {
+      currentStep++;
+      const factor = currentStep / steps;
+
+      setCountProgress(Math.round(32 * factor));
+      setCountKg(Number((12.5 * factor).toFixed(1)));
+      setCountRank(Math.max(8, Math.round(50 - 42 * factor)));
+      setCountScan(Math.round(12 * factor));
+
+      if (currentStep >= steps) {
+        clearInterval(countInterval);
+      }
+    }, intervalTime);
+
+    return () => clearInterval(countInterval);
   }, []);
 
   const greeting = getGreeting();
@@ -63,7 +92,7 @@ export default function BerandaPage() {
           {/* Icon Keranjang -> /keranjang */}
           <button
             onClick={() => router.push('/keranjang')}
-            className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
+            className="relative flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors active:scale-95"
             aria-label="Keranjang"
           >
             <Icon name="ShoppingCartIcon" size={20} className="text-foreground" />
@@ -74,7 +103,7 @@ export default function BerandaPage() {
           {/* Icon Chat -> /chat */}
           <button
             onClick={() => router.push('/chat')}
-            className="flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors"
+            className="flex items-center justify-center w-9 h-9 rounded-xl bg-muted hover:bg-secondary transition-colors active:scale-95"
             aria-label="Chat"
           >
             <Icon name="ChatBubbleLeftRightIcon" size={20} className="text-foreground" />
@@ -83,27 +112,27 @@ export default function BerandaPage() {
       }
     >
       <div className="max-w-2xl mx-auto space-y-5">
-        {/* a. Greeting Card */}
+        {/* a. Kartu Sapaan */}
         <div
           onClick={() => router.push('/profil')}
-          className="bg-card rounded-2xl shadow-sm border border-border p-4 flex items-center gap-4 cursor-pointer hover:shadow-md transition-all"
+          className="bg-card rounded-2xl shadow-sm border border-border p-4 flex items-center gap-4 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all"
         >
           <div className="w-12 h-12 rounded-full gradient-navy flex items-center justify-center text-white font-bold text-sm flex-shrink-0">
-            RA
+            MH
           </div>
           <div>
-            <h2 className="text-lg font-bold text-foreground">
-              Selamat {greeting}, Raditya!
+            <h2 className="text-base font-extrabold text-foreground">
+              {greeting}, Muhammad Hafiz Maulana
             </h2>
-            <p className="text-xs text-muted-foreground">
+            <p className="text-xs text-muted-foreground mt-0.5">
               Kenali Kondisinya, Tentukan Langkahnya!
             </p>
           </div>
         </div>
 
-        {/* b. Promo Banner Carousel */}
+        {/* b. Banner Promosi Carousel */}
         <div>
-          <div className="relative overflow-hidden rounded-2xl">
+          <div className="relative overflow-hidden rounded-2xl shadow-sm">
             <div
               className="flex transition-transform duration-500 ease-in-out"
               style={{ transform: `translateX(-${activeSlide * 100}%)` }}
@@ -111,13 +140,13 @@ export default function BerandaPage() {
               {promoSlides.map((slide, i) => (
                 <div
                   key={i}
-                  className="w-full flex-shrink-0 bg-gradient-to-r from-[#1E3A8A] via-[#3B82F6] to-[#60A5FA] rounded-2xl p-6 min-h-[140px] flex flex-col justify-center"
+                  className="w-full flex-shrink-0 bg-gradient-to-r from-[#1E3A8A] via-[#3B82F6] to-[#60A5FA] rounded-2xl p-6 min-h-[140px] flex flex-col justify-center text-white"
                 >
                   <h3 className="text-white text-xl font-extrabold">{slide.title}</h3>
                   <p className="text-white/80 text-sm mt-1">{slide.subtitle}</p>
                   <button
                     onClick={() => router.push(slide.link)}
-                    className="mt-3 bg-white text-[#1A2B5C] rounded-xl px-5 py-2 text-xs font-bold hover:bg-white/90 transition-colors self-start shadow-sm"
+                    className="mt-3 bg-white text-[#1A2B5C] rounded-xl px-5 py-2 text-xs font-bold hover:bg-white/90 active:scale-95 transition-all self-start shadow-sm"
                   >
                     {slide.cta}
                   </button>
@@ -142,32 +171,32 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        {/* c. Impact Stats Card -> /dampak */}
+        {/* c. Kartu Impact Tracker (Count-up Animation) */}
         <div
           onClick={() => router.push('/dampak')}
-          className="bg-card rounded-2xl shadow-sm border border-border p-4 cursor-pointer hover:shadow-md transition-all"
+          className="bg-card rounded-2xl shadow-sm border border-border p-4 cursor-pointer hover:shadow-md active:scale-[0.99] transition-all"
         >
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <Icon name="GlobeAmericasIcon" size={16} className="text-primary" />
-              <span className="text-sm font-bold text-foreground">Dampak Sirkularmu</span>
+              <span className="text-xs font-bold text-foreground">Dampak Sirkularmu</span>
             </div>
             <span className="text-[11px] font-bold text-primary hover:underline">Lihat Detail →</span>
           </div>
           <div className="grid grid-cols-4 gap-0">
-            {/* Progress Circle */}
+            {/* Donut Chart Progress */}
             <div className="flex flex-col items-center justify-center border-r border-border pr-2">
               <svg width="44" height="44" viewBox="0 0 44 44" className="mb-1">
                 <circle cx="22" cy="22" r="18" fill="none" stroke="#ECEEF3" strokeWidth="5" />
                 <circle
                   cx="22" cy="22" r="18" fill="none"
                   stroke="#1A2B5C" strokeWidth="5"
-                  strokeDasharray="113.1" strokeDashoffset={113.1 * (1 - 0.32)}
+                  strokeDasharray="113.1" strokeDashoffset={113.1 * (1 - countProgress / 100)}
                   strokeLinecap="round"
                   transform="rotate(-90 22 22)"
                 />
                 <text x="22" y="22" textAnchor="middle" dy="0.35em" className="text-[10px] font-extrabold fill-foreground">
-                  32%
+                  {countProgress}%
                 </text>
               </svg>
               <span className="text-[10px] text-muted-foreground font-medium">Target</span>
@@ -175,28 +204,28 @@ export default function BerandaPage() {
 
             {/* Weight Saved */}
             <div className="flex flex-col items-center justify-center border-r border-border px-2">
-              <Icon name="ScaleIcon" size={14} className="text-primary mb-1" />
-              <span className="text-base font-extrabold text-foreground">12.5</span>
+              <Icon name="ScaleIcon" size={14} className="text-emerald-600 mb-1" />
+              <span className="text-base font-extrabold text-foreground">{countKg}</span>
               <span className="text-[10px] text-muted-foreground">kg Diselamatkan</span>
             </div>
 
             {/* Ranking */}
             <div className="flex flex-col items-center justify-center border-r border-border px-2">
               <span className="text-sm mb-1">🏆</span>
-              <span className="text-base font-extrabold text-foreground">#8</span>
-              <span className="text-[10px] text-muted-foreground">Ranking</span>
+              <span className="text-base font-extrabold text-foreground">#{countRank}</span>
+              <span className="text-[10px] text-muted-foreground">Peringkat</span>
             </div>
 
             {/* Scan Count */}
             <div className="flex flex-col items-center justify-center pl-2">
               <Icon name="CameraIcon" size={14} className="text-primary mb-1" />
-              <span className="text-base font-extrabold text-foreground">12</span>
-              <span className="text-[10px] text-muted-foreground">Scan Baju</span>
+              <span className="text-base font-extrabold text-foreground">{countScan}</span>
+              <span className="text-[10px] text-muted-foreground">Discan</span>
             </div>
           </div>
         </div>
 
-        {/* d. Feature Cards (3 columns) -> Styliss AI, Care Plan, Wearwise AI */}
+        {/* d. 3 Kartu Fitur Utama (Styliss AI, Care Plan, Wearwise AI) */}
         <div className="grid grid-cols-3 gap-3">
           <div
             onClick={() => router.push('/styliss-ai')}
@@ -232,7 +261,7 @@ export default function BerandaPage() {
           </div>
         </div>
 
-        {/* e. Category Filter Pills */}
+        {/* e. Filter Kategori Pills */}
         <div className="flex gap-2 overflow-x-auto scrollbar-hide pb-1">
           {categories.map((cat) => (
             <button
@@ -240,8 +269,8 @@ export default function BerandaPage() {
               onClick={() => setSelectedCategory(cat)}
               className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
                 selectedCategory === cat
-                  ? 'bg-[#1A2B5C] text-white'
-                  : 'bg-white text-foreground border border-border hover:border-[#1A2B5C]/40'
+                  ? 'bg-[#10284D] text-white shadow-sm'
+                  : 'bg-white text-foreground border border-border hover:border-[#10284D]/40'
               }`}
             >
               {cat}
@@ -268,7 +297,7 @@ export default function BerandaPage() {
                 <div
                   key={i}
                   onClick={() => router.push('/trift-marketplace')}
-                  className="w-[155px] flex-shrink-0 bg-card rounded-2xl border border-border shadow-sm overflow-hidden hover:shadow-md transition-all cursor-pointer"
+                  className="w-[155px] flex-shrink-0 bg-card rounded-2xl border border-border shadow-sm overflow-hidden hover:shadow-md active:scale-95 transition-all cursor-pointer"
                 >
                   {/* Image Placeholder */}
                   <div className="w-full h-[120px] bg-gradient-to-br from-muted to-secondary flex items-center justify-center">
