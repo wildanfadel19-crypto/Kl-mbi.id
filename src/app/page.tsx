@@ -89,11 +89,10 @@ export default function BerandaPage() {
   const [countScan, setCountScan] = useState(0);
 
   useEffect(() => {
-    // Simulasi alur entry: jika belum login / belum melintasi splash, arahkan ke splash screen
-    const isAuth = localStorage.getItem('klambi_auth');
+    // Simulasi alur entry: jika belum melintasi splash screen pada sesi ini, arahkan ke splash screen
     const hasSplashed = sessionStorage.getItem('klambi_splashed');
 
-    if (!isAuth && !hasSplashed) {
+    if (!hasSplashed) {
       sessionStorage.setItem('klambi_splashed', 'true');
       router.push('/splash');
     }
