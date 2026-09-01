@@ -1,7 +1,18 @@
 'use client';
 
-import LoginPage from '../login/page';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function DaftarPage() {
-  return <LoginPage />;
+  const router = useRouter();
+
+  useEffect(() => {
+    router.replace('/login');
+  }, [router]);
+
+  return (
+    <div className="min-h-screen bg-white flex items-center justify-center">
+      <div className="w-8 h-8 border-4 border-[#10284D] border-t-transparent rounded-full animate-spin" />
+    </div>
+  );
 }

@@ -26,9 +26,9 @@ export default function NotFound() {
                     </div>
                 </div>
 
-                <h2 className="text-2xl font-medium text-onBackground mb-2">Page Not Found</h2>
-                <p className="text-onBackground/70 mb-8">
-                    The page you're looking for doesn't exist. Let's get you back!
+                <h2 className="text-2xl font-medium text-foreground mb-2">Halaman Tidak Ditemukan</h2>
+                <p className="text-muted-foreground mb-8">
+                  Halaman yang Anda cari tidak ditemukan. Mari kembali ke beranda!
                 </p>
 
                 <div className="flex flex-col sm:flex-row gap-4 justify-center">
