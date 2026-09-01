@@ -21,9 +21,9 @@ export default function SplashScreenPage() {
 
       if (step >= totalSteps) {
         clearInterval(timer);
-        // Redirect to Home page after splash completes
+        // Redirect to Login page after splash completes
         setTimeout(() => {
-          router.push('/');
+          router.push('/login');
         }, 200);
       }
     }, intervalTime);
