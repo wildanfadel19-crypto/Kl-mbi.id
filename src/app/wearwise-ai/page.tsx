@@ -211,7 +211,7 @@ export default function WearwiseAIPage() {
             {/* Action Buttons */}
             <div className="grid grid-cols-2 gap-3 pt-2">
               <button
-                onClick={() => router.push('/menu-perawatan')}
+                onClick={() => router.push('/rawat')}
                 className="bg-[#10284D] text-white py-3.5 rounded-2xl text-xs font-bold shadow-md hover:bg-[#152248] active:scale-95 transition-all"
               >
                 📖 Lihat Cara Rawat
